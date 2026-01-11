@@ -1,0 +1,187 @@
+{% load static %}
+{% block content %}
+
+<style>
+    body {
+        background-image: url("{% static 'images/flight_login.jpg' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .navbar-custom {
+        background-color: rgba(0, 89, 179, 0.9);
+        padding: 12px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar-custom a {
+        color: white;
+        margin: 0 15px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+
+    .navbar-custom a:hover {
+        color: #ffcc00;
+    }
+
+    .booking-form {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 700px;
+        margin: 40px auto;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .booking-form h2 {
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .form-control {
+        border-radius: 6px;
+        margin-bottom: 15px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .passenger-details {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+
+    .popup {
+        position: fixed;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.25);
+        display: none;
+        z-index: 9999;
+        text-align: center;
+    }
+
+    .popup.show {
+        display: block;
+    }
+</style>
+
+<!-- ✅ Navigation Bar -->
+<div class="navbar-custom">
+    <div>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="#">Booking</a>
+        <a href="{% url 'my_bookings' %}">Bookings</a>
+    </div>
+    <div>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
+
+<!-- ✅ Booking Form -->
+<div class="booking-form">
+    <h2>Book Flight: {{ flight.flight_number }} - {{ flight.airline }}</h2>
+
+    <form method="post" id="booking-form" onsubmit="showPopup(); return false;">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            {{ form.full_name }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mobile Number</label>
+            {{ form.mobile_number }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Journey Date</label>
+            {{ form.journey_date }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Seat Class</label>
+            {{ form.seat_class }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Number of Passengers</label>
+            {{ form.seats }}
+        </div>
+        <div class="mb-3">
+             <label class="form-label">Total Price</label>
+             <input type="text" id="total-price" class="form-control" readonly>
+        </div>
+
+        <!-- Passenger Fields (Dynamic) -->
+        <div id="passenger-fields" class="passenger-details"></div>
+
+        <button type="submit" class="btn btn-primary">Confirm Booking</button>
+    </form>
+</div>
+
+<!-- ✅ Confirmation Popup -->
+<div id="confirmation-popup" class="popup">
+    <h4>✅ Ticket Confirmed!</h4>
+    <p>Your flight has been successfully booked.</p>
+    <button class="btn btn-success mt-3" onclick="window.location.href='{% url 'home' %}'">Go to Home</button>
+</div>
+
+<!-- ✅ JavaScript -->
+<script>
+    const seatsInput = document.getElementById("id_seats");
+    const container = document.getElementById("passenger-fields");
+    const totalPriceInput = document.getElementById("total-price");
+    const pricePerSeat = {{ flight.price }};  // Passed from backend
+
+    seatsInput.addEventListener("input", () => {
+        const count = parseInt(seatsInput.value) || 0;
+
+        // Update total price
+        totalPriceInput.value = "₹ " + (count * pricePerSeat).toFixed(2);
+
+        // Show passenger fields
+        container.innerHTML = '';
+        for (let i = 1; i <= count; i++) {
+            container.innerHTML += `
+                <h5>Passenger ${i}</h5>
+                <input type="text" name="passenger_name_${i}" placeholder="Name" class="form-control" required>
+                <input type="number" name="passenger_age_${i}" placeholder="Age" class="form-control" required>
+            `;
+        }
+    });
+
+    function showPopup() {
+        document.getElementById("confirmation-popup").classList.add("show");
+        setTimeout(() => {
+            document.querySelector("form").submit();
+        }, 1500);
+    }
+</script>
+
+{% endblock %}

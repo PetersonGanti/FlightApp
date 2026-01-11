@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Search</title>
+    <style>
+        body {
+            background-image: url("{% static 'images/flight_bg1.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', sans-serif;
+            
+            
+            
+            margin: 0;
+            padding: 0;
+        }
+        .nav {
+            text-align: right;
+            background-color: #0077cc;
+            color: white;
+            padding: 10px 20px;
+        }
+        .nav a {
+            color: white;
+            margin-left: 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 850px;
+            margin: 30px auto;
+            background-color: rgba(255 ,255 , 255, 0);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0077cc;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+        }
+        .message {
+            color: green;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #0077cc;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nav">
+        {% if user.is_authenticated %}
+            Welcome, {{ user.username }} |
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}">Signup</a>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="container">
+        <h2>Search Flights</h2>
+        <form method="get">
+            <label>Source</label>
+            <input type="text" name="source" placeholder="Enter source city" value="{{ source_query }}">
+
+            <label>Destination</label>
+            <input type="text" name="destination" placeholder="Enter destination city" value="{{ destination_query }}">
+
+            <label>Date</label>
+            <input type="date" name="departure_date" value="{{ departure_date_query }}">
+
+            <button type="submit">Search</button>
+        </form>
+
+        {% if flights %}
+            <h3>Available Flights</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Flight Number</th>
+                        <th>Airline</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Departure Time</th>
+                        <th>Price (₹)</th> <!-- 👈 Added -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flight in flights %}
+                        <tr>
+                            <td>{{ flight.flight_number }}</td>
+                            <td>{{ flight.airline }}</td>
+                            <td>{{ flight.source }}</td>
+                            <td>{{ flight.destination }}</td>
+                            <td>{{ flight.departure_time }}</td>
+                            <td>{{ flight.price }}</td>
+                            <td><a href="{% url 'book_flight' flight.id %}" class="btn btn-success btn-sm">Book Now</a></td> <!-- 👈 Added -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="text-align:center;">No flights found.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

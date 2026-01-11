@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+
+        .left {
+            flex: 1;
+            background-image: url("{% static 'images/plane.jpg' %}");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .right {
+            flex: 1;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .signup-form {
+            width: 80%;
+            max-width: 400px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, #ff4b2b, #ff416c);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .bottom-text {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .bottom-text a {
+            color: #ff416c;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="left" style="background-image: url('{% static 'images/plane.jpg' %}');">
+</div>
+
+    <div class="right">
+        <form method="post" class="signup-form">
+            {% csrf_token %}
+            <h2>Sign Up</h2>
+           <div class="form-group">
+    <label for="{{ form.full_name.id_for_label }}">Full Name</label>
+    {{ form.full_name }}
+</div>
+<div class="form-group">
+    <label for="{{ form.email.id_for_label }}">Email</label>
+    {{ form.email }}
+</div>
+<div class="form-group">
+    <label for="{{ form.username.id_for_label }}">Username</label>
+    {{ form.username }}
+</div>
+<div class="form-group">
+    <label for="{{ form.password1.id_for_label }}">Password</label>
+    {{ form.password1 }}
+</div>
+<div class="form-group">
+    <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+    {{ form.password2 }}
+</div>
+            <button type="submit">Sign Up</button>
+            <div class="bottom-text">
+                Already have an account? <a href="{% url 'login' %}">Sign In</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
